@@ -1,0 +1,27 @@
+xsel (0.9.6-3) unstable; urgency=low
+
+  * New maintainer, closes: #453669.
+  * bump debhelper compat to 5.
+  * bump std-ver to 3.7.3, no changes.
+
+ -- Joe Nahmias <jello@debian.org>  Mon, 03 Dec 2007 22:31:42 -0500
+
+xsel (0.9.6-2) unstable; urgency=low
+
+  * Orphaning - maintainer set to QA Group
+
+ -- Thom May <thom@debian.org>  Fri, 30 Nov 2007 14:22:32 +0000
+
+xsel (0.9.6-1.1) unstable; urgency=low
+
+  * Non-maintainer upload to help with xlibs-dev transition
+  * debian/control: Replaced xlibs-dev build-dep. (Closes: #346875)
+
+ -- Marc 'HE' Brockschmidt <he@debian.org>  Fri, 20 Jan 2006 17:08:23 +0100
+
+xsel (0.9.6-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Thom May <thom@debian.org>  Mon, 11 Feb 2002 08:54:01 +0000
+
