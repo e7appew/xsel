@@ -1,3 +1,16 @@
+xsel (1.0.0-1) unstable; urgency=low
+
+  * New upstream release
+    + Include UTF-8 support, closes: #231413.
+    + fix manpage typo, closes: #203925.
+    + fix output when backgrounded, closes: #444638.
+  * added watch file
+  * moved Homepage to source section of control
+  * added Vcs-Svn and Vcs-Browser fields to source section of control
+  * manpage section -> 1x to make lintian happy
+
+ -- Joe Nahmias <jello@debian.org>  Mon, 14 Jan 2008 23:43:44 -0500
+
 xsel (0.9.6-3) unstable; urgency=low
 
   * New maintainer, closes: #453669.
