@@ -2,7 +2,7 @@ Source: xsel
 Section: x11
 Priority: optional
 Maintainer: Joe Nahmias <jello@debian.org>
-Build-Depends: debhelper (>> 5.0.0), libx11-dev, libxt-dev, x-dev
+Build-Depends: debhelper (>> 6.0.0), libx11-dev, libxt-dev
 Standards-Version: 3.7.3
 Homepage: http://www.vergenet.net/~conrad/software/xsel/
 Vcs-Browser: http://svn.kfish.org/xsel/trunk/

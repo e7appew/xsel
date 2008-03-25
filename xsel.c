@@ -61,9 +61,13 @@ static Atom incr_atom; /* The INCR atom */
 static Atom null_atom; /* The NULL atom */
 static Atom text_atom; /* The TEXT atom */
 static Atom utf8_atom; /* The UTF8 atom */
+static Atom compound_text_atom; /* The COMPOUND_TEXT atom */
 
 /* Number of selection targets served by this.
- * (MULTIPLE, INCR, TARGETS, TIMESTAMP, DELETE, TEXT, UTF8_STRING and STRING) */
+ * (MULTIPLE, INCR, TARGETS, TIMESTAMP, DELETE, TEXT, UTF8_STRING and STRING)
+ * NB. We do not currently serve COMPOUND_TEXT; we can retrieve it but do not
+ * perform charset conversion.
+ */
 #define MAX_NUM_TARGETS 8
 static int NUM_TARGETS;
 static Atom supported_targets[MAX_NUM_TARGETS];
@@ -85,6 +89,9 @@ static int current_alloc = 0;
 
 static long timeout = 0;
 static struct itimerval timer;
+
+static int saved_argc;
+static char ** saved_argv;
 
 /*
  * usage ()
@@ -333,7 +340,7 @@ gotpw:
  *
  * Perform the required procedure to become a daemon process, as
  * outlined in the Unix programming FAQ:
- * http://www.erlenstar.demon.co.uk/unix/faq_2.html#SEC16 
+ * http://www.steve.org.uk/Reference/Unix/faq_2.html#SEC16
  * and open a logfile.
  */
 static void
@@ -626,6 +633,7 @@ wait_selection (Atom selection, Atom request_target)
                                         *(int *)value);
           keep_waiting = False;
         } else if (target != utf8_atom && target != XA_STRING &&
+                   target != compound_text_atom &&
                    request_target != delete_atom) {
           /* Report non-TEXT atoms */
           print_debug (D_WARN, "Selection (type %s) is not a string.",
@@ -1796,6 +1804,81 @@ exchange_selections (void)
   set_selection_pair__daemon (text2, text1);
 }
 
+/*
+ * free_saved_argv ()
+ *
+ * atexit function for freeing argv, after it has been relocated to the
+ * heap.
+ */
+static void
+free_saved_argv (void)
+{
+  int i;
+
+  for (i=0; i < saved_argc; i++) {
+    free (saved_argv[i]);
+  }
+  free (saved_argv);
+}
+
+/*
+ * expand_argv (&argc, &argv)
+ *
+ * Explodes single letter options so that the argument parser can see
+ * all of them. Relocates argv and all arguments to the heap.
+ */
+static void 
+expand_argv(int * argc, char **argv[])
+{
+  int i, new_i, arglen, new_argc = *argc;
+  char ** new_argv;
+  char * arg;
+ 
+  /* Calculate new argc */
+  for (i = 0; i < *argc; i++) {
+    arglen = strlen((*argv)[i]);
+    /* An option we need to expand? */
+    if ((arglen > 2) && (*argv)[i][0] == '-' && (*argv)[i][1] != '-')
+      new_argc += arglen-2;
+  }
+
+  /* Allocate new_argv */
+  new_argv = xs_malloc (new_argc * sizeof(char *));
+
+  /* Copy args into new argv */
+  for (i = 0, new_i = 0; i < *argc; i++) {
+    arglen = strlen((*argv)[i]);
+   
+    /* An option we need to expand? */
+    if ((arglen > 2)
+	&& (*argv)[i][0] == '-' && (*argv)[i][1] != '-') {
+      /* Make each letter a new argument. */
+
+      char * c = ((*argv)[i] + 1);
+     
+      while (*c != '\0') {
+	arg = xs_malloc(sizeof(char) * 3);
+	arg[0] = '-';
+	arg[1] = *c;
+	arg[2] = '\0';
+        new_argv[new_i++] = arg;
+        c++;
+      }
+    } else {
+      /* Simply copy the argument pointer to new_argv */
+      new_argv[new_i++] = strdup ((*argv)[i]);
+    }
+  }
+
+  /* Set the expected return values */
+  *argc = new_argc;
+  *argv = new_argv;
+
+  /* Save the new argc, argv values and free them on exit */
+  saved_argc = new_argc;
+  saved_argv = new_argv;
+  atexit (free_saved_argv);
+}
 
 /*
  * main (argc, argv)
@@ -1849,6 +1932,9 @@ main(int argc, char *argv[])
   }
 
 #define OPT(s) (strcmp (argv[i], (s)) == 0)
+
+  /* Expand argv array before parsing to uncombine arguments. */
+  expand_argv(&argc, &argv);
 
   /* Parse options; modify behaviour according to user-specified options */
   for (i=1; i < argc; i++) {
@@ -2010,6 +2096,12 @@ main(int argc, char *argv[])
 
   supported_targets[s++] = XA_STRING;
   NUM_TARGETS++;
+
+  /* Get the COMPOUND_TEXT atom.
+   * NB. We do not currently serve COMPOUND_TEXT; we can retrieve it but
+   * do not perform charset conversion.
+   */
+  compound_text_atom = XInternAtom (display, "COMPOUND_TEXT", False);
 
   /* handle selection keeping and exit if so */
   if (do_keep) {

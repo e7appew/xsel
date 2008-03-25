@@ -692,6 +692,7 @@ X_CFLAGS
 X_PRE_LIBS
 X_LIBS
 X_EXTRA_LIBS
+X_LDFLAGS
 GREP
 EGREP
 LIBOBJS
@@ -2034,7 +2035,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=xsel
- VERSION=1.0.0
+ VERSION=1.2.0
 
 
 cat >>confdefs.h <<_ACEOF
@@ -5800,12 +5801,82 @@ fi
 
 fi
 
-#AC_SUBST(X_CFLAGS)
-#AC_SUBST(X_LDFLAGS)
-#AC_SUBST(X_LIBS)
-#AC_SUBST(X_EXTRA_LIBS)
 
-#AC_CHECK_LIB([X11], [XOpenDisplay])
+
+
+
+
+
+{ echo "$as_me:$LINENO: checking for XOpenDisplay in -lX11" >&5
+echo $ECHO_N "checking for XOpenDisplay in -lX11... $ECHO_C" >&6; }
+if test "${ac_cv_lib_X11_XOpenDisplay+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lX11  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char XOpenDisplay ();
+int
+main ()
+{
+return XOpenDisplay ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext &&
+       $as_test_x conftest$ac_exeext; then
+  ac_cv_lib_X11_XOpenDisplay=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_X11_XOpenDisplay=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_lib_X11_XOpenDisplay" >&5
+echo "${ECHO_T}$ac_cv_lib_X11_XOpenDisplay" >&6; }
+if test $ac_cv_lib_X11_XOpenDisplay = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBX11 1
+_ACEOF
+
+  LIBS="-lX11 $LIBS"
+
+fi
+
 
 # Error out on compile warnings
 if test "x$ac_cv_c_compiler_gnu" = xyes ; then
@@ -8400,13 +8471,14 @@ X_CFLAGS!$X_CFLAGS$ac_delim
 X_PRE_LIBS!$X_PRE_LIBS$ac_delim
 X_LIBS!$X_LIBS$ac_delim
 X_EXTRA_LIBS!$X_EXTRA_LIBS$ac_delim
+X_LDFLAGS!$X_LDFLAGS$ac_delim
 GREP!$GREP$ac_delim
 EGREP!$EGREP$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 82; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 83; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

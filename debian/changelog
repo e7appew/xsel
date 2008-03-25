@@ -1,3 +1,11 @@
+xsel (1.2.0-1) unstable; urgency=low
+
+  * New upstream release
+  * debian/control: drop, now unnecessary, x-dev from Build-Depends
+  * bump debhelper compat to 6, no changes.
+
+ -- Joe Nahmias <jello@debian.org>  Mon, 24 Mar 2008 23:04:35 -0400
+
 xsel (1.0.0-1) unstable; urgency=low
 
   * New upstream release
