@@ -11,6 +11,10 @@
  * implied warranty.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -56,11 +60,13 @@ static Atom delete_atom; /* The DELETE atom */
 static Atom incr_atom; /* The INCR atom */
 static Atom null_atom; /* The NULL atom */
 static Atom text_atom; /* The TEXT atom */
+static Atom utf8_atom; /* The UTF8 atom */
 
 /* Number of selection targets served by this.
- * (MULTIPLE, INCR, TARGETS, TIMESTAMP, DELETE, TEXT and STRING) */
-#define NUM_TARGETS 7
-static Atom supported_targets[NUM_TARGETS];
+ * (MULTIPLE, INCR, TARGETS, TIMESTAMP, DELETE, TEXT, UTF8_STRING and STRING) */
+#define MAX_NUM_TARGETS 8
+static int NUM_TARGETS;
+static Atom supported_targets[MAX_NUM_TARGETS];
 
 /* do_follow: Follow mode for output */
 static Boolean do_follow = False;
@@ -211,7 +217,7 @@ print_err (const char * fmt, ...)
  *
  * Returns a string with a printable name for the Atom 'atom'.
  */
-static unsigned char *
+static char *
 get_atom_name (Atom atom)
 {
   if (atom == None) return "None";
@@ -225,6 +231,7 @@ get_atom_name (Atom atom)
   if (atom == incr_atom) return "INCR";
   if (atom == null_atom) return "NULL";
   if (atom == text_atom) return "TEXT";
+  if (utf8_atom!=XA_STRING && atom == utf8_atom) return "UTF8_STRING";
   if (atom == XInternAtom (display, "XSEL_DATA", True)) return "XSEL_DATA";
 
   return "<unknown atom>";
@@ -259,6 +266,27 @@ xs_malloc (size_t size)
 
   return ret;
 }
+
+/*
+ * xs_strdup (s)
+ *
+ * strdup wrapper for unsigned char *
+ */
+#define xs_strdup(s) ((unsigned char *) strdup ((const char *)s))
+
+/*
+ * xs_strlen (s)
+ *
+ * strlen wrapper for unsigned char *
+ */
+#define xs_strlen(s) (strlen ((const char *) s))
+
+/*
+ * xs_strncpy (s)
+ *
+ * strncpy wrapper for unsigned char *
+ */
+#define xs_strncpy(dest,src,n) (strncpy ((char *)dest, (const char *)src, n))
 
 /*
  * get_homedir ()
@@ -481,14 +509,14 @@ get_append_property (XSelectionEvent * xsl, unsigned char ** buffer,
     print_debug (D_TRACE, "Got zero length property; end of INCR transfer");
     return False;
   } else if (format == 8) {
-    if (*offset + length > *alloc) {
+    if ((unsigned long)*offset + length > (unsigned long)*alloc) {
       *alloc = *offset + length;
       if ((*buffer = realloc (*buffer, *alloc)) == NULL) {
         exit_err ("realloc error");
       }
     }
     ptr = *buffer + *offset;
-    strncpy (ptr, value, length);
+    xs_strncpy (ptr, value, length);
     *offset += length;
     print_debug (D_TRACE, "Appended %d bytes to buffer\n", length);
   } else {
@@ -590,12 +618,15 @@ wait_selection (Atom selection, Atom request_target)
         debug_property (D_TRACE, event.xselection.requestor,
                         event.xselection.property, target, length);
 
-        if (target == incr_atom) {
+        if (request_target == delete_atom && value == NULL) {
+          keep_waiting = False;
+        } else if (target == incr_atom) {
           /* Handle INCR transfers */
           retval = wait_incr_selection (selection, &event.xselection,
                                         *(int *)value);
           keep_waiting = False;
-        } else if (target != XA_STRING && request_target != delete_atom) {
+        } else if (target != utf8_atom && target != XA_STRING &&
+                   request_target != delete_atom) {
           /* Report non-TEXT atoms */
           print_debug (D_WARN, "Selection (type %s) is not a string.",
                        get_atom_name (target));
@@ -603,7 +634,7 @@ wait_selection (Atom selection, Atom request_target)
           retval = NULL;
           keep_waiting = False;
         } else {
-          retval = strdup (value);
+          retval = xs_strdup (value);
           XFree (value);
           keep_waiting = False;
         }
@@ -673,6 +704,31 @@ get_selection (Atom selection, Atom request_target)
 }
 
 /*
+ * get_selection_text (Atom selection)
+ *
+ * Retrieve a text selection. First attempt to retrieve it as UTF_STRING,
+ * and if that fails attempt to retrieve it as a plain XA_STRING.
+ *
+ * NB. Before implementing this, an attempt was made to query TARGETS and
+ * request UTF8_STRING only if listed there, as described in:
+ * http://www.pps.jussieu.fr/~jch/software/UTF8_STRING/UTF8_STRING.text
+ * However, that did not seem to work reliably when tested against various
+ * applications (eg. Mozilla Firefox). This method is of course more
+ * reliable.
+ */
+static unsigned char *
+get_selection_text (Atom selection)
+{
+  unsigned char * retval;
+
+  if ((retval = get_selection (selection, utf8_atom)) == NULL)
+    retval = get_selection (selection, XA_STRING);
+
+  return retval;
+}
+
+
+/*
  * SELECTION SETTING
  * =================
  *
@@ -691,8 +747,8 @@ copy_sel (unsigned char * s)
 {
   unsigned char * new_sel = NULL;
 
-  new_sel = strdup (s);
-  current_alloc = total_input = strlen (s);
+  new_sel = xs_strdup (s);
+  current_alloc = total_input = xs_strlen (s);
 
   return new_sel;
 }
@@ -1258,7 +1314,23 @@ handle_string (Display * display, Window requestor, Atom property,
 {
   return
     change_property (display, requestor, property, XA_STRING, 8,
-                     PropModeReplace, sel, strlen(sel),
+                     PropModeReplace, sel, xs_strlen(sel),
+                     selection, time, mparent);
+}
+
+/*
+ * handle_utf8_string (display, requestor, property, sel)
+ *
+ * Handle a UTF8_STRING request; setting 'sel' as the data
+ */
+static HandleResult
+handle_utf8_string (Display * display, Window requestor, Atom property,
+                    unsigned char * sel, Atom selection, Time time,
+                    MultTrack * mparent)
+{
+  return
+    change_property (display, requestor, property, utf8_atom, 8,
+                     PropModeReplace, sel, xs_strlen(sel),
                      selection, time, mparent);
 }
 
@@ -1308,6 +1380,9 @@ process_multiple (MultTrack * mt, Boolean do_parent)
     } else if (mt->atoms[i] == XA_STRING || mt->atoms[i] == text_atom) {
       retval |= handle_string (mt->display, mt->requestor, mt->atoms[i+1],
                                mt->sel, mt->selection, mt->time, mt);
+    } else if (mt->atoms[i] == utf8_atom) {
+      retval |= handle_utf8_string (mt->display, mt->requestor, mt->atoms[i+1],
+                                    mt->sel, mt->selection, mt->time, mt);
     } else if (mt->atoms[i] == delete_atom) {
       retval |= handle_delete (mt->display, mt->requestor, mt->atoms[i+1]);
     } else if (mt->atoms[i] == None) {
@@ -1480,6 +1555,11 @@ handle_selection_request (XEvent event, unsigned char * sel)
     ev.property = xsr->property;
     hr = handle_string (ev.display, ev.requestor, ev.property, sel,
                         ev.selection, ev.time, NULL);
+  } else if (ev.target == utf8_atom) {
+    /* Received UTF8_STRING request */
+    ev.property = xsr->property;
+    hr = handle_utf8_string (ev.display, ev.requestor, ev.property, sel,
+                             ev.selection, ev.time, NULL);
   } else if (ev.target == delete_atom) {
     /* Received DELETE request */
     ev.property = xsr->property;
@@ -1692,8 +1772,8 @@ keep_selections (void)
 {
   unsigned char * text1, * text2;
 
-  text1 = get_selection (XA_PRIMARY, XA_STRING);
-  text2 = get_selection (XA_SECONDARY, XA_STRING);
+  text1 = get_selection_text (XA_PRIMARY);
+  text2 = get_selection_text (XA_SECONDARY);
 
   set_selection_pair__daemon (text1, text2);
 }
@@ -1710,8 +1790,8 @@ exchange_selections (void)
 {
   unsigned char * text1, * text2;
 
-  text1 = get_selection (XA_PRIMARY, XA_STRING);
-  text2 = get_selection (XA_SECONDARY, XA_STRING);
+  text1 = get_selection_text (XA_PRIMARY);
+  text2 = get_selection_text (XA_SECONDARY);
 
   set_selection_pair__daemon (text2, text1);
 }
@@ -1755,9 +1835,15 @@ main(int argc, char *argv[])
 
   /* Specify default behaviour based on input and output file types */
   if (isatty(0) && isatty(1)) {
+    /* Interactive mode: both stdin and stdout are ttys */
     do_input = False; dont_input = True;
     do_output = False; dont_output = False;
+  } else if (!isatty(0) && !isatty(1)) {
+    /* Scripted: both stdin and stdout are NOT ttys */
+    do_input = False; dont_input = True;
+    do_output = True; dont_output = False;
   } else {
+    /* Interactive, pipelined: one of stdin or stdout is a tty */
     do_input = !isatty(0); dont_input = !do_input;
     do_output = !isatty(1); dont_output = !do_output;
   }
@@ -1877,34 +1963,53 @@ main(int argc, char *argv[])
   if (test_atom != XA_SECONDARY)
     print_debug (D_WARN, "XA_SECONDARY not named \"SECONDARY\"\n");
 
+  NUM_TARGETS=0;
+
   /* Get the TIMESTAMP atom */
   timestamp_atom = XInternAtom (display, "TIMESTAMP", False);
   supported_targets[s++] = timestamp_atom;
+  NUM_TARGETS++;
 
   /* Get the MULTIPLE atom */
   multiple_atom = XInternAtom (display, "MULTIPLE", False);
   supported_targets[s++] = multiple_atom;
+  NUM_TARGETS++;
 
   /* Get the TARGETS atom */
   targets_atom = XInternAtom (display, "TARGETS", False);
   supported_targets[s++] = targets_atom;
+  NUM_TARGETS++;
 
   /* Get the DELETE atom */
   delete_atom = XInternAtom (display, "DELETE", False);
   supported_targets[s++] = delete_atom;
+  NUM_TARGETS++;
 
   /* Get the INCR atom */
   incr_atom = XInternAtom (display, "INCR", False);
   supported_targets[s++] = incr_atom;
+  NUM_TARGETS++;
 
   /* Get the NULL atom */
   null_atom = XInternAtom (display, "NULL", False);
+  NUM_TARGETS++;
 
   /* Get the TEXT atom */
   text_atom = XInternAtom (display, "TEXT", False);
   supported_targets[s++] = text_atom;
+  NUM_TARGETS++;
+
+  /* Get the UTF8_STRING atom */
+  utf8_atom = XInternAtom (display, "UTF8_STRING", True);
+  if(utf8_atom != None) {
+    supported_targets[s++] = utf8_atom;
+    NUM_TARGETS++;
+  } else {
+    utf8_atom = XA_STRING;
+  }
 
   supported_targets[s++] = XA_STRING;
+  NUM_TARGETS++;
 
   /* handle selection keeping and exit if so */
   if (do_keep) {
@@ -1926,7 +2031,7 @@ main(int argc, char *argv[])
   /* handle output modes */
   if (do_output || !dont_output) {
     /* Get the current selection */
-    old_sel = get_selection (selection, XA_STRING);
+    old_sel = get_selection_text (selection);
     if (old_sel) printf ("%s", old_sel);
   }
 
@@ -1938,7 +2043,7 @@ main(int argc, char *argv[])
   }
   else if (do_input || !dont_input) {
     if (do_append) {
-      if (!old_sel) old_sel = get_selection (selection, XA_STRING);
+      if (!old_sel) old_sel = get_selection_text (selection);
       new_sel = copy_sel (old_sel);
     }
     new_sel = initialise_read (new_sel);

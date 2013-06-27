@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT([xsel.c])
-AM_INIT_AUTOMAKE(xsel, 0.9.6)
+AM_INIT_AUTOMAKE(xsel, 1.0.0)
 AC_CONFIG_SRCDIR([xsel.c])
 AM_CONFIG_HEADER(config.h)
 
@@ -19,6 +19,14 @@ AC_PATH_XTRA
 #AC_SUBST(X_EXTRA_LIBS)
 
 #AC_CHECK_LIB([X11], [XOpenDisplay])
+
+# Error out on compile warnings
+dnl Add some useful warnings if we have gcc.
+dnl changequote(,)dnl
+if test "x$ac_cv_prog_gcc" = xyes ; then
+  CFLAGS="$CFLAGS -fno-strict-aliasing -Wall -Werror -g -std=gnu99 -Wdeclaration-after-statement -Wno-unused"
+fi
+dnl changequote([,])dnl
 
 # Checks for header files.
 AC_HEADER_STDC
