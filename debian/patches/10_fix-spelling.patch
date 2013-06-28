@@ -1,0 +1,16 @@
+Description: fix spelling mistake
+Author: Joe Nahmias <jello@debian.org>
+Last-Update: 2013-06-28
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+--- xsel.orig/xsel.c
++++ xsel/xsel.c
+@@ -1224,7 +1224,7 @@
+   it->chunk = MIN (it->max_elements, it->nelements - it->offset);
+ 
+   /* Wait for that property to get deleted */
+-  print_debug (D_TRACE, "Waiting on intial property deletion (%s)",
++  print_debug (D_TRACE, "Waiting on initial property deletion (%s)",
+                get_atom_name (it->property));
+ 
+   return HANDLE_INCOMPLETE;
