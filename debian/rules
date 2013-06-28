@@ -4,4 +4,4 @@
 #export DH_OPTIONS=-v
 
 %:
-	dh  $@
+	dh $@ --with autotools_dev
