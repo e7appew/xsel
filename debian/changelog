@@ -1,3 +1,17 @@
+xsel (1.2.0-2) unstable; urgency=low
+
+  * convert to 3.0 (quilt) source format
+  * fix spelling mistake pointed out by lintian
+  * fix manpage hyphens as pointed out by lintian
+  * move to debhelper compat v9
+  * minimize d/rules using dh(1)
+  * auto-refresh config.* using autotools-dev; add build-dep
+  * d/control: update VCS headers; add gbp config
+  * bump std-ver to 3.9.4, no further changes needed
+  * fix crash when copying empty/NULL selections (Closes: #596763)
+
+ -- Joe Nahmias <jello@debian.org>  Sun, 30 Jun 2013 20:12:16 -0400
+
 xsel (1.2.0-1) unstable; urgency=low
 
   * New upstream release
