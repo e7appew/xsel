@@ -1,0 +1,25 @@
+From: Joe Nahmias <joe@nahmias.net>
+Date: Sun, 30 Jun 2013 19:36:17 -0400
+Subject: fix crash when copying NULL selections
+
+Closes: #596763
+---
+ xsel.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+--- xsel.orig/xsel.c
++++ xsel/xsel.c
+@@ -755,8 +755,11 @@
+ {
+   unsigned char * new_sel = NULL;
+ 
+-  new_sel = xs_strdup (s);
+-  current_alloc = total_input = xs_strlen (s);
++  if (s)
++    new_sel = xs_strdup (s);
++  else
++    new_sel = xs_strdup ("");
++  current_alloc = total_input = xs_strlen (new_sel);
+ 
+   return new_sel;
+ }
