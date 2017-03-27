@@ -5,13 +5,13 @@ Maintainer: Joe Nahmias <jello@debian.org>
 Build-Depends: debhelper (>= 10), libx11-dev, libxt-dev, autotools-dev
 Standards-Version: 3.9.8
 Homepage: http://www.vergenet.net/~conrad/software/xsel/
-Vcs-Browser: http://anonscm.debian.org/git/collab-maint/xsel.git
-Vcs-Git: git://anonscm.debian.org/collab-maint/xsel.git
+Vcs-Browser: https://anonscm.debian.org/cgit/collab-maint/xsel.git
+Vcs-Git: https://anonscm.debian.org/git/collab-maint/xsel.git
 
 Package: xsel
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: command-line tool to access X clipboard and selection buffers
- XSel is a command-line program for getting and setting the contents of 
+ XSel is a command-line program for getting and setting the contents of
  the X selection.  It can also append and have it follow a growing file
  (similar to tail -f).
