@@ -1,19 +1,41 @@
-This package was originally debianized by Thom May <thom@debian.org> on
-Mon, 11 Feb 2002 08:54:01 +0000, and is now maintained by Joe Nahmias
-<jello@debian.org>.
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Contact: Conrad Parker <conrad@vergenet.net>
+Upstream-Name: XSel
+Source: http://www.vergenet.net/~conrad/software/xsel/
 
-It was downloaded from http://www.vergenet.net/~conrad/software/xsel/
+Files: *
+Copyright: 2001, Conrad Parker <conrad@vergenet.net>
+License: HPND
 
-Upstream Author: Conrad Parker <conrad@vergenet.net>
+Files: debian/*
+Copyright: 2002, Thom May <thom@debian.org>
+           2006, Marc 'HE' Brockschmidt <he@debian.org>
+           2007–2013, Joe Nahmias <jello@debian.org>
+           2017, Carlos Maddela <e7appew@gmail.com>
+License: GPL-3.0+
 
-Copyright:
-
- Copyright (C) 2001 Conrad Parker <conrad@vergenet.net> 
-
+License: HPND
  Permission to use, copy, modify, distribute, and sell this software and
  its documentation for any purpose is hereby granted without fee,
  provided that the above copyright notice appear in all copies and that
  both that copyright notice and this permission notice appear in
  supporting documentation. No representations are made about the
  suitability of this software for any purpose. It is provided "as is"
- without express or implied warranty. 
+ without express or implied warranty.
+
+License: GPL-3.0+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU General
+ Public License version 3 can be found in "/usr/share/common-licenses/GPL-3".
