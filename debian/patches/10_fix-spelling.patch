@@ -1,11 +1,21 @@
+From: Joe Nahmias <jello@debian.org>
+Date: Fri, 28 Jun 2013 00:00:00 +0000
+Subject: fix spelling mistake
+
 Description: fix spelling mistake
 Author: Joe Nahmias <jello@debian.org>
 Last-Update: 2013-06-28
 ---
 This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
---- xsel.orig/xsel.c
-+++ xsel/xsel.c
-@@ -1224,7 +1224,7 @@
+---
+ xsel.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xsel.c b/xsel.c
+index 79cc68b..33ec625 100644
+--- a/xsel.c
++++ b/xsel.c
+@@ -1224,7 +1224,7 @@ change_property (Display * display, Window requestor, Atom property,
    it->chunk = MIN (it->max_elements, it->nelements - it->offset);
  
    /* Wait for that property to get deleted */

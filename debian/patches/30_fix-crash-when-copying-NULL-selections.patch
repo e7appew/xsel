@@ -2,14 +2,21 @@ From: Joe Nahmias <joe@nahmias.net>
 Date: Sun, 30 Jun 2013 19:36:17 -0400
 Subject: fix crash when copying NULL selections
 
-Closes: #596763
+Description: fix crash when copying NULL selections
+Author: Joe Nahmias <joe@nahmias.net>
+Bug-Debian: https://bugs.debian.org/596763
+Last-Update: 2013-06-30
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
 ---
  xsel.c | 7 +++++--
  1 file changed, 5 insertions(+), 2 deletions(-)
 
---- xsel.orig/xsel.c
-+++ xsel/xsel.c
-@@ -755,8 +755,11 @@
+diff --git a/xsel.c b/xsel.c
+index 33ec625..a0c7d4e 100644
+--- a/xsel.c
++++ b/xsel.c
+@@ -755,8 +755,11 @@ copy_sel (unsigned char * s)
  {
    unsigned char * new_sel = NULL;
  
