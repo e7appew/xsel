@@ -2,8 +2,8 @@ Source: xsel
 Section: x11
 Priority: optional
 Maintainer: Joe Nahmias <jello@debian.org>
-Build-Depends: debhelper (>> 9), libx11-dev, libxt-dev, autotools-dev
-Standards-Version: 3.9.4
+Build-Depends: debhelper (>= 10), libx11-dev, libxt-dev, autotools-dev
+Standards-Version: 3.9.8
 Homepage: http://www.vergenet.net/~conrad/software/xsel/
 Vcs-Browser: http://anonscm.debian.org/git/collab-maint/xsel.git
 Vcs-Git: git://anonscm.debian.org/collab-maint/xsel.git
