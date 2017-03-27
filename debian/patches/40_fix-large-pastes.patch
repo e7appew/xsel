@@ -1,0 +1,30 @@
+From: Carlos Maddela <maddela@labyrinth.net.au>
+Date: Sun, 22 Feb 2015 03:53:37 +1100
+Subject: Fix large pastes
+
+Description: Fix large pastes
+ Fix memory corruption when selection > 4000 bytes.
+Author: Hans de Goede <hdegoede@redhat.com>
+Origin: vendor, http://pkgs.fedoraproject.org/cgit/xsel.git/tree/xsel-1.2.0-fix-large-pastes.patch
+Bug-Debian: https://bugs.debian.org/758599
+Last-Update: 2015-02-22
+---
+This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
+---
+ xsel.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/xsel.c b/xsel.c
+index a0c7d4e..e6d1060 100644
+--- a/xsel.c
++++ b/xsel.c
+@@ -505,7 +505,8 @@ get_append_property (XSelectionEvent * xsl, unsigned char ** buffer,
+ 
+   debug_property (D_TRACE, xsl->requestor, xsl->property, target, length);
+ 
+-  if (target != XA_STRING) {
++  if (target != utf8_atom && target != XA_STRING &&
++      target != compound_text_atom) {
+     print_debug (D_OBSC, "target %s not XA_STRING in get_append_property()",
+                  get_atom_name (target));
+     free (*buffer);
