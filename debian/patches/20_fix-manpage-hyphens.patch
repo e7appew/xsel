@@ -12,10 +12,10 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/xsel.1x b/xsel.1x
-index 3f16f5b..fe64460 100644
+index c63caa9..16262ba 100644
 --- a/xsel.1x
 +++ b/xsel.1x
-@@ -105,7 +105,7 @@ fork to become a background process in \fIinput\fR, \fIexchange\fR and
+@@ -106,7 +106,7 @@ fork to become a background process in \fIinput\fR, \fIexchange\fR and
  display usage information and exit
  .TP
  \fB\-v\fR, \fB\-\-verbose\fR
@@ -24,7 +24,7 @@ index 3f16f5b..fe64460 100644
  debugging level, ie. print more information.
  .TP
  \fB\-\-version\fR
-@@ -121,10 +121,10 @@ mouse button paste. In order to implement modification of the selection(s)
+@@ -122,10 +122,10 @@ mouse button paste. In order to implement modification of the selection(s)
  from the terminal, spawning a child process to supply the new selection(s)
  on demand. This child exits immediately when any other program takes over
  the selection(s), eg. when the user next selects some text in a terminal

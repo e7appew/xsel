@@ -12,10 +12,10 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/xsel.c b/xsel.c
-index 79cc68b..33ec625 100644
+index 685bdd6..841bd34 100644
 --- a/xsel.c
 +++ b/xsel.c
-@@ -1224,7 +1224,7 @@ change_property (Display * display, Window requestor, Atom property,
+@@ -1319,7 +1319,7 @@ change_property (Display * display, Window requestor, Atom property,
    it->chunk = MIN (it->max_elements, it->nelements - it->offset);
  
    /* Wait for that property to get deleted */

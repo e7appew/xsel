@@ -15,16 +15,16 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/xsel.c b/xsel.c
-index a0c7d4e..e6d1060 100644
+index 4d684b2..dce2c00 100644
 --- a/xsel.c
 +++ b/xsel.c
-@@ -505,7 +505,8 @@ get_append_property (XSelectionEvent * xsl, unsigned char ** buffer,
+@@ -588,7 +588,8 @@ get_append_property (XSelectionEvent * xsl, unsigned char ** buffer,
  
    debug_property (D_TRACE, xsl->requestor, xsl->property, target, length);
  
--  if (target != XA_STRING) {
+-  if (target != XA_STRING && target != utf8_atom) {
 +  if (target != utf8_atom && target != XA_STRING &&
 +      target != compound_text_atom) {
-     print_debug (D_OBSC, "target %s not XA_STRING in get_append_property()",
+     print_debug (D_OBSC, "target %s not XA_STRING nor UTF8_STRING in get_append_property()",
                   get_atom_name (target));
      free (*buffer);

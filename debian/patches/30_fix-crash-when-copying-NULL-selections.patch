@@ -13,10 +13,10 @@ This patch header follows DEP-3: http://dep.debian.net/deps/dep3/
  1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/xsel.c b/xsel.c
-index 33ec625..a0c7d4e 100644
+index 841bd34..4d684b2 100644
 --- a/xsel.c
 +++ b/xsel.c
-@@ -755,8 +755,11 @@ copy_sel (unsigned char * s)
+@@ -836,8 +836,11 @@ copy_sel (unsigned char * s)
  {
    unsigned char * new_sel = NULL;
  

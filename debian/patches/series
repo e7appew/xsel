@@ -1,3 +1,4 @@
+00_merge-a7f57eed.patch
 10_fix-spelling.patch
 20_fix-manpage-hyphens.patch
 30_fix-crash-when-copying-NULL-selections.patch
