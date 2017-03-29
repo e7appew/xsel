@@ -3,3 +3,4 @@
 20_fix-manpage-hyphens.patch
 30_fix-crash-when-copying-NULL-selections.patch
 40_fix-large-pastes.patch
+50_preserve-HOME-env-var.patch
