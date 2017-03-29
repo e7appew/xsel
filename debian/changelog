@@ -1,3 +1,26 @@
+xsel (1.2.0-2.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Make patch headers compatible with gbp.
+  * Fix memory corruption when selection > 4000 bytes.
+    Thanks to Hans de Goede for patch. (Closes: #758599)
+  * Update standards to version 3.9.8 and Debhelper compat level to 10.
+  * Update VCS URLs to use secure protocol.
+  * Suppress Lintian warning about checking GPG signature.
+  * Compile with all hardening flags set.
+  * Convert debian/copyright to DEP-5 format and update.
+  * Merge unreleased upstream fixes up to aa7f57eed,
+    except for markdown conversion of README and INSTALL files.
+    (Closes: #545385, #580916)
+  * Fix side-effect introduced by merge of unreleased upstream fixes.
+    Make sure that the HOME environment variable doesn't get modified.
+  * Perform fstat on stdin and stdout only if required.
+    Thanks to Nathaniel Beaver for reporting and determining cause.
+    (Closes: #831415)
+  * Add LFS support to 32-bit architectures.
+
+ -- Carlos Maddela <e7appew@gmail.com>  Thu, 30 Mar 2017 06:01:06 +1100
+
 xsel (1.2.0-2) unstable; urgency=low
 
   * convert to 3.0 (quilt) source format
